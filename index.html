@@ -1,20 +1,98 @@
-<main id="mainContent" aria-label="The Cartier Fabulous Journey">
-<link rel="stylesheet" href="experience.css" />
-<section id="mm-experience-wrapper"></section>
-<script>
-   function getURLParameter(name) {
-    var value = new RegExp('[?&]' + name + '=([^&]*)', 'i').exec(window.location.search);
-    return value && decodeURIComponent(value[1].replace(/\+/g, ' '));
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+    <title>A Memoir of Dhruti</title>
+    <link rel="stylesheet" href="experience.css" />
+    <style>
+        /* Essential: Hide UI elements on the last level */
+        .starry-night .score-dial, .starry-night .score-counter { display: none !important; }
 
-// Utilisation :
-var local = getURLParameter('lang'); // Si l'URL est "https://exemple.com?page=home&lang=en_us", paramValue sera "en_us"
+        /* Cinematic Overlay Container */
+        #dhruti-ending {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0a14; z-index: 99999; overflow: hidden;
+            opacity: 0; transition: opacity 2s ease-in-out;
+            color: #fff; font-family: Georgia, serif;
+        }
 
-//console.log(langValue);
-    window.MM_EXPERIENCE_CONFIG = {
-        lang: local, // Remplacer dynamiquement la locale ici selon la locale en cours sur le site cartier.
-        assetsPath: "/"
-    }
-</script>
-<script crossorigin type="module" src="experience.js"></script>
+        #dhruti-credits {
+            position: absolute; top: 100%; left: 0; width: 100%; text-align: center;
+            transition: top 18s linear; 
+        }
+        
+        #dhruti-video-wrap {
+            position: absolute; top: 200%; left: 50%; transform: translateX(-50%);
+            width: min(90vw, 560px); 
+            display: flex; flex-direction: column; align-items: center;
+            transition: top 18s linear; 
+        }
+
+        #dhruti-playagain {
+            margin-top: 2em; padding: 12px 40px; background: transparent; 
+            border: 1px solid #c9a96e; color: #c9a96e; font-size: 0.9em; 
+            letter-spacing: 0.2em; cursor: pointer;
+            opacity: 0; transition: opacity 1s ease-in; display: none;
+        }
+    </style>
+</head>
+<body>
+
+<main id="mainContent" aria-label="A Memoir of Dhruti">
+    <section id="mm-experience-wrapper"></section>
+
+    <div id="dhruti-ending">
+        <div id="dhruti-credits">
+            <p style="font-size:1.2em;letter-spacing:0.15em;color:#c9a96e;">A Journey Through Our Memories</p><br>
+            <p style="font-size:0.9em;color:#aaa;">Designed &amp; made with love by Mohit</p><br>
+            <p style="font-size:0.85em;color:#888;">For Dhruti — on her birthday</p><br><br>
+            <p style="font-size:0.8em;color:#666;">[ Last Day of School · First Snapchat · First Meeting ]</p>
+            <p style="font-size:0.8em;color:#666;">[ Township Adventures · Macau Café · Bangalore Life ]</p>
+            <p style="font-size:0.8em;color:#666;">[ College Memories · Roommate Life · Mangalore ]</p>
+        </div>
+        
+        <div id="dhruti-video-wrap">
+            <video id="dhruti-video" style="width:100%;border-radius:8px;box-shadow:0 0 40px rgba(201,169,110,0.3);">
+                <source src="birthday-message.mp4" type="video/mp4">
+            </video>
+            <button id="dhruti-playagain" onclick="location.reload()">PLAY AGAIN</button>
+        </div>
+    </div>
 </main>
+
+<script>
+    window.MM_EXPERIENCE_CONFIG = {
+        lang: new RegExp('[?&]lang=([^&]*)', 'i').exec(window.location.search)?.[1] || "en_gb",
+        assetsPath: "/"
+    };
+
+    window._dhrutiShowEnding = function() {
+      const el = document.getElementById('dhruti-ending');
+      const credits = document.getElementById('dhruti-credits');
+      const videoWrap = document.getElementById('dhruti-video-wrap');
+      const video = document.getElementById('dhruti-video');
+      const btn = document.getElementById('dhruti-playagain');
+      
+      el.style.display = 'flex';
+      void el.offsetWidth;
+      el.style.opacity = '1';
+
+      setTimeout(() => {
+        credits.style.top = '-100%';    
+        videoWrap.style.top = '15%';    
+      }, 1500);
+
+      setTimeout(() => {
+        video.play().catch(e => console.log("Autoplay blocked:", e));
+        btn.style.display = 'block';
+        void btn.offsetWidth;
+        btn.style.opacity = '1';
+      }, 19500); 
+    };
+</script>
+
+<script crossorigin type="module" src="experience.js"></script>
+
+</body>
+</html>
