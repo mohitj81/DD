@@ -6,35 +6,80 @@
     <title>A Memoir of Dhruti</title>
     <link rel="stylesheet" href="experience.css" />
     <style>
-        /* Essential: Hide UI elements on the last level */
-        .starry-night .score-dial, .starry-night .score-counter { display: none !important; }
+        /* 1. Safely hide End-Game UI elements when on the Starry Night level */
+        body.is-starry-night .score-dial,
+        body.is-starry-night .score-counter,
+        body.is-starry-night .score-result,
+        body.is-starry-night .score-screen,
+        body.is-starry-night .gameover {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
 
-        /* Cinematic Overlay Container */
+        /* 2. Ending Overlay */
         #dhruti-ending {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0a0a14; z-index: 99999; overflow: hidden;
+            background: #0a0a14; z-index: 999999; overflow: hidden;
             opacity: 0; transition: opacity 2s ease-in-out;
             color: #fff; font-family: Georgia, serif;
         }
-
         #dhruti-credits {
             position: absolute; top: 100%; left: 0; width: 100%; text-align: center;
-            transition: top 18s linear; 
+            transition: top 18s linear;
         }
-        
         #dhruti-video-wrap {
             position: absolute; top: 200%; left: 50%; transform: translateX(-50%);
-            width: min(90vw, 560px); 
-            display: flex; flex-direction: column; align-items: center;
-            transition: top 18s linear; 
+            width: min(90vw, 560px); display: flex; flex-direction: column; align-items: center;
+            transition: top 18s linear;
+        }
+        #dhruti-playagain {
+            margin-top: 2em; padding: 12px 40px; background: transparent;
+            border: 1px solid #c9a96e; color: #c9a96e; font-size: 0.9em;
+            letter-spacing: 0.2em; cursor: pointer; opacity: 0;
+            transition: opacity 1s ease-in; display: none;
         }
 
-        #dhruti-playagain {
-            margin-top: 2em; padding: 12px 40px; background: transparent; 
-            border: 1px solid #c9a96e; color: #c9a96e; font-size: 0.9em; 
-            letter-spacing: 0.2em; cursor: pointer;
-            opacity: 0; transition: opacity 1s ease-in; display: none;
+        /* 3. Remove the "Discoveries" tab from the header */
+        .header-discovery { display: none !important; }
+
+        /* 4. Reconfigure the pause Menu */
+        .menu-utilities { display: none !important; }
+
+        /* Hide our custom menu completely when the game is actively playing */
+        .menu:not(.is-visible) .menu-chapter-select {
+            display: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
         }
+
+        .menu-chapter-select {
+            margin-top: 2em;
+            padding-top: 1.5em;
+            border-top: 1px solid rgba(201, 169, 110, 0.3);
+            text-align: center;
+        }
+        .menu-chapter-select-label {
+            color: #c9a96e;
+            font-size: 0.75em;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1em;
+            opacity: 0.8;
+        }
+        .menu-chapter-icons {
+            display: flex; justify-content: center; gap: 14px;
+        }
+        .nav-icon-btn {
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 1px solid #c9a96e; background: rgba(201,169,110,0.08);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.25s, background 0.25s;
+            padding: 0;
+        }
+        .nav-icon-btn:hover { transform: scale(1.12); background: rgba(201,169,110,0.2); }
+        .nav-icon-btn svg { width: 20px; height: 20px; display: block; }
     </style>
 </head>
 <body>
@@ -51,7 +96,7 @@
             <p style="font-size:0.8em;color:#666;">[ Township Adventures · Macau Café · Bangalore Life ]</p>
             <p style="font-size:0.8em;color:#666;">[ College Memories · Roommate Life · Mangalore ]</p>
         </div>
-        
+
         <div id="dhruti-video-wrap">
             <video id="dhruti-video" style="width:100%;border-radius:8px;box-shadow:0 0 40px rgba(201,169,110,0.3);">
                 <source src="birthday-message.mp4" type="video/mp4">
@@ -67,32 +112,120 @@
         assetsPath: "/"
     };
 
+    // Track the URL to accurately hide the UI when on Starry Night
+    setInterval(() => {
+        if (window.location.hash.includes('starry-night') || window.location.pathname.includes('starry-night')) {
+            document.body.classList.add('is-starry-night');
+        } else {
+            document.body.classList.remove('is-starry-night');
+        }
+    }, 250);
+
     window._dhrutiShowEnding = function() {
-      const el = document.getElementById('dhruti-ending');
-      const credits = document.getElementById('dhruti-credits');
-      const videoWrap = document.getElementById('dhruti-video-wrap');
-      const video = document.getElementById('dhruti-video');
-      const btn = document.getElementById('dhruti-playagain');
-      
-      el.style.display = 'flex';
-      void el.offsetWidth;
-      el.style.opacity = '1';
+        const el = document.getElementById('dhruti-ending');
+        if (!el) return;
+        
+        // Force-hide the root Cartier UI container so it cannot overlap the ending
+        const uiContainer = document.querySelector('.ui');
+        if (uiContainer) uiContainer.style.display = 'none !important';
 
-      setTimeout(() => {
-        credits.style.top = '-100%';    
-        videoWrap.style.top = '15%';    
-      }, 1500);
-
-      setTimeout(() => {
-        video.play().catch(e => console.log("Autoplay blocked:", e));
-        btn.style.display = 'block';
-        void btn.offsetWidth;
-        btn.style.opacity = '1';
-      }, 19500); 
+        el.style.display = 'flex';
+        void el.offsetWidth;
+        el.style.opacity = '1';
+        
+        setTimeout(() => {
+            document.getElementById('dhruti-credits').style.top = '-100%';
+            document.getElementById('dhruti-video-wrap').style.top = '15%';
+        }, 1500);
+        setTimeout(() => {
+            document.getElementById('dhruti-video').play().catch(e => console.log(e));
+            const btn = document.getElementById('dhruti-playagain');
+            btn.style.display = 'block';
+            void btn.offsetWidth;
+            btn.style.opacity = '1';
+        }, 19500);
     };
+
+    window.debugSwitchLevel = function (routeName) {
+        if (!routeName) return;
+
+        if (routeName === 'ending') {
+            window._dhrutiShowEnding();
+            return;
+        }
+
+        const validLevels = ['Sea of Clouds', 'Frozen Lake', 'Starry Night'];
+        if (!validLevels.includes(routeName)) return;
+
+        try {
+            const appEl = document.querySelector('#mm-experience-wrapper').__vue_app__;
+            if (appEl) {
+                const user = appEl.config.globalProperties.$user;
+                const router = appEl.config.globalProperties.$router;
+                const store = appEl.config.globalProperties.$store;
+                
+                if (user && router) {
+                    user.currentLevel = routeName;
+                    if (typeof user.saveData === 'function') user.saveData();
+                    
+                    router.push({ name: routeName });
+                    
+                    if (store) store.isMenuOpen = false;
+                    return; 
+                }
+            }
+        } catch(e) {
+            console.error(e);
+        }
+
+        // Fallback: LocalStorage + Reload
+        let saved = {};
+        try { 
+            const raw = localStorage.getItem('cartier-eoy-23');
+            if (raw) saved = JSON.parse(raw);
+        } catch(e) {}
+        
+        saved.currentLevel = routeName;
+        localStorage.setItem('cartier-eoy-23', JSON.stringify(saved));
+        window.location.reload();
+    };
+
+    // ---- Icons (inline SVG, no external files needed) ----
+    const NAV_ICONS = {
+        'Sea of Clouds': '<svg viewBox="0 0 24 24" fill="#c9a96e"><path d="M6.5 19a4.5 4.5 0 0 1-.5-8.97A6 6 0 0 1 17.8 9.2 4 4 0 0 1 17.5 19h-11z"/></svg>',
+        'Frozen Lake': '<svg viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="4" y1="7" x2="20" y2="17"/><line x1="20" y1="7" x2="4" y2="17"/></svg>',
+        'Starry Night': '<svg viewBox="0 0 24 24" fill="#c9a96e"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"/></svg>',
+        'ending': '<svg viewBox="0 0 24 24" fill="#c9a96e"><path d="M12 21s-7-4.35-9.5-8.5C.7 9.2 2.3 5.5 6 5.5c2 0 3.3 1.1 4 2.2.7-1.1 2-2.2 4-2.2 3.7 0 5.3 3.7 3.5 7-2.5 4.15-9.5 8.5-9.5 8.5z"/></svg>'
+    };
+
+    // ---- Reconfigure the pause Menu: inject a Chapter Select block ----
+    function buildChapterSelect() {
+        const wrap = document.createElement('div');
+        wrap.className = 'menu-chapter-select';
+        wrap.innerHTML = `
+            <p class="menu-chapter-select-label">Jump to a Chapter</p>
+            <div class="menu-chapter-icons">
+                <button type="button" class="nav-icon-btn" data-level="Sea of Clouds" title="Sea of Clouds">${NAV_ICONS['Sea of Clouds']}</button>
+                <button type="button" class="nav-icon-btn" data-level="Frozen Lake" title="Frozen Lake">${NAV_ICONS['Frozen Lake']}</button>
+                <button type="button" class="nav-icon-btn" data-level="Starry Night" title="Starry Night">${NAV_ICONS['Starry Night']}</button>
+                <button type="button" class="nav-icon-btn" data-level="ending" title="Birthday Message">${NAV_ICONS['ending']}</button>
+            </div>
+        `;
+        wrap.querySelectorAll('.nav-icon-btn').forEach(btn => {
+            btn.addEventListener('click', () => window.debugSwitchLevel(btn.dataset.level));
+        });
+        return wrap;
+    }
+
+    const menuInjectTimer = setInterval(() => {
+        const menuList = document.querySelector('.menu .menu-list');
+        if (menuList && !menuList.querySelector('.menu-chapter-select')) {
+            menuList.appendChild(buildChapterSelect());
+            clearInterval(menuInjectTimer);
+        }
+    }, 500);
 </script>
 
 <script crossorigin type="module" src="experience.js"></script>
-
 </body>
 </html>
