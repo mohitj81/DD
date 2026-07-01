@@ -80,6 +80,8 @@
         }
         .nav-icon-btn:hover { transform: scale(1.12); background: rgba(201,169,110,0.2); }
         .nav-icon-btn svg { width: 20px; height: 20px; display: block; }
+
+
     </style>
 </head>
 <body>
@@ -227,5 +229,61 @@
 </script>
 
 <script crossorigin type="module" src="experience.js"></script>
+
+
+<script>
+(function () {
+  let collected = 0;
+  const MAX_ORBS = 9;
+
+  function triggerCollect(idx) {
+    if (idx >= MAX_ORBS) return;
+    collected = idx + 1;
+    if (window.WorkSlideshow) WorkSlideshow.open(`orb-${collected}`); 
+  }
+
+  window.dhrutiCollectOrb = (idx) => triggerCollect(idx ?? collected);
+
+  function watchScore() {
+    console.log("✅ Score watcher attached to the whole page!");
+    let lastScore = 0;
+
+    const obs = new MutationObserver(() => {
+      const currentCounter = document.querySelector('.score-counter');
+      if (!currentCounter) return; // If it's not on screen yet, do nothing
+      
+      const cur = parseInt(currentCounter.textContent || '0', 10) || 0;
+      if (cur > lastScore) {
+        console.log(`🎉 Score increased: ${lastScore} -> ${cur}`);
+        const newCount = cur - lastScore;
+        for (let k = 0; k < newCount; k++) {
+          if (collected < MAX_ORBS) triggerCollect(collected);
+        }
+        lastScore = cur;
+      }
+    });
+    
+    // Watch the entire body so we catch the counter whenever the game creates it
+    obs.observe(document.body, { characterData: true, childList: true, subtree: true });
+  }
+
+  function waitForGame() {
+    const check = setInterval(() => {
+      const preloader = document.getElementById('mm-preloader-wrapper');
+      const gameReady = document.querySelector('.score-counter, .ui');
+      if (!preloader && gameReady) {
+        clearInterval(check);
+        watchScore();
+      }
+    }, 500);
+  }
+
+  waitForGame();
+})();
+</script>
+<link rel="stylesheet" href="slideshow-modal.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="slideshow-modal.js"></script>
 </body>
 </html>

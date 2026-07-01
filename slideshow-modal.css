@@ -1,0 +1,141 @@
+/* ============================================================
+   Work Slideshow Modal — page-to-page scroll-snap gallery
+   Inspired by aikawakenichi.com's /work page interaction.
+   Drop this file in and link it from your DD project's index.html
+   ============================================================ */
+
+.ws-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0a0a0a;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.ws-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Close button */
+.ws-modal__close {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  z-index: 10001;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.ws-modal__close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.06);
+}
+
+/* Counter top-left, like the original site's nav feel */
+.ws-modal__counter {
+  position: fixed;
+  top: 28px;
+  left: 32px;
+  z-index: 10001;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Scroll container: each child is a full-bleed "page" */
+.ws-modal__scroller {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ws-modal__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.ws-slide {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ws-slide__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, opacity;
+  transform: scale(1.08);
+  opacity: 0;
+}
+
+/* Subtle vignette so the white close/counter UI stays readable */
+.ws-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0) 18%,
+    rgba(0, 0, 0, 0) 82%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+}
+
+/* Progress rail, right side */
+.ws-modal__rail {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ws-modal__rail-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.ws-modal__rail-dot.is-active {
+  background: #fff;
+  transform: scale(1.4);
+}
+
+@media (max-width: 768px) {
+  .ws-modal__rail { display: none; }
+  .ws-modal__close { top: 16px; right: 16px; width: 38px; height: 38px; }
+  .ws-modal__counter { top: 20px; left: 16px; }
+}
