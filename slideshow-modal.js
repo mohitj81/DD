@@ -183,6 +183,11 @@
   function open() {
     buildDOM();
     document.body.style.overflow = "hidden";
+    document.body.classList.add("slideshow-active"); // Hides the game menu visually
+    try {
+      const app = document.querySelector('#mm-experience-wrapper').__vue_app__;
+      if (app) app.config.globalProperties.$store.isMenuOpen = true;
+    } catch(e) {}
     modalEl.classList.add("is-open");
     initLenis();
     // reset to first slide and play its entrance
@@ -202,6 +207,11 @@
   function close() {
     if (!modalEl) return;
     modalEl.classList.remove("is-open");
+    document.body.classList.remove("slideshow-active"); // Restores the native UI
+    try {
+      const app = document.querySelector('#mm-experience-wrapper').__vue_app__;
+      if (app) app.config.globalProperties.$store.isMenuOpen = false;
+    } catch(e) {}
     document.body.style.overflow = "";
     destroyLenis();
   }

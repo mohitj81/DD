@@ -4,11 +4,22 @@
    Drop this file in and link it from your DD project's index.html
    ============================================================ */
 
+/* Hides the game's default menu UI when slideshow is active */
+body.slideshow-active .menu,
+body.slideshow-active .ui {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 .ws-modal {
   position: fixed;
-  inset: 0;
+  inset: 10%;
   z-index: 9999;
   background: #0a0a0a;
+  border: 1px solid #c9a96e; /* Adds a clean border matching your site's gold accent */
+  border-radius: 8px; /* Optional: rounds the corners slightly */
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.4); /* Lighter background mask (0.4 instead of 0.7) */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -77,7 +88,7 @@
 
 .ws-slide {
   position: relative;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;

@@ -236,49 +236,17 @@
   let collected = 0;
   const MAX_ORBS = 9;
 
-  function triggerCollect(idx) {
-    if (idx >= MAX_ORBS) return;
-    collected = idx + 1;
-    if (window.WorkSlideshow) WorkSlideshow.open(`orb-${collected}`); 
-  }
-
-  window.dhrutiCollectOrb = (idx) => triggerCollect(idx ?? collected);
-
-  function watchScore() {
-    console.log("✅ Score watcher attached to the whole page!");
-    let lastScore = 0;
-
-    const obs = new MutationObserver(() => {
-      const currentCounter = document.querySelector('.score-counter');
-      if (!currentCounter) return; // If it's not on screen yet, do nothing
-      
-      const cur = parseInt(currentCounter.textContent || '0', 10) || 0;
-      if (cur > lastScore) {
-        console.log(`🎉 Score increased: ${lastScore} -> ${cur}`);
-        const newCount = cur - lastScore;
-        for (let k = 0; k < newCount; k++) {
-          if (collected < MAX_ORBS) triggerCollect(collected);
-        }
-        lastScore = cur;
-      }
-    });
-    
-    // Watch the entire body so we catch the counter whenever the game creates it
-    obs.observe(document.body, { characterData: true, childList: true, subtree: true });
-  }
-
-  function waitForGame() {
-    const check = setInterval(() => {
-      const preloader = document.getElementById('mm-preloader-wrapper');
-      const gameReady = document.querySelector('.score-counter, .ui');
-      if (!preloader && gameReady) {
-        clearInterval(check);
-        watchScore();
-      }
-    }, 500);
-  }
-
-  waitForGame();
+  window.addEventListener('mm-orb-collected', () => {
+    if (collected >= MAX_ORBS) return;
+    collected++;
+    console.log(`🎉 Orb collected: ${collected}`);
+    if (window.WorkSlideshow) {
+      console.log('✅ Calling WorkSlideshow.open()');
+      WorkSlideshow.open(`orb-${collected}`);
+    } else {
+      console.warn('❌ WorkSlideshow not ready yet!');
+    }
+  });
 })();
 </script>
 <link rel="stylesheet" href="slideshow-modal.css">
