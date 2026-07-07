@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+	<defs>
+		<style>
+			path { stroke: currentColor; stroke-width: 6px; fill: none; stroke-miterlimit: 10; }
+			.path-1 { stroke: #F4A261; }
+			.path-2 { stroke: #E0569B; }
+			.path-3 { stroke: #5FB0E6; }
+			@media (prefers-color-scheme: dark) {
+				.path-1 { stroke: #E9C797; }
+				.path-2 { stroke: #D594AD; }
+				.path-3 { stroke: #B4D0E8; }
+			}
+		</style>
+	</defs>
+	<path class="path-1" d="M27,9.131c-10.377,2.286-18.143,11.531-18.143,22.595,0,2.429.376,4.77,1.07,6.97" />
+	<path class="path-2" d="M14.933,47.354c4.231,4.618,10.31,7.515,17.067,7.515s12.836-2.897,17.067-7.515" />
+	<path class="path-3" d="M54.072,38.697c.694-2.2,1.07-4.541,1.07-6.97,0-11.064-7.766-20.309-18.143-22.595" />
+</svg>

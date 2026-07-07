@@ -1,0 +1,169 @@
+/* work-gallery.css
+   Vertical scroll-snap stack -> draggable scattered polaroid
+   scrapbook -> fullscreen lightbox. Reimplemented as original
+   code using DD's own assets. */
+
+:root {
+  --wg-header-h: clamp(60px, 10svh, 120px);
+  --wg-h-margin: 60px;
+  --wg-row-gap: 40px;
+  --wg-fixed-w: clamp(240px, 100%, 1080px);
+}
+
+@media (max-width: 640px) {
+  :root { --wg-h-margin: 20px; }
+}
+
+body.wg-active .menu,
+body.wg-active .ui {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+#work-gallery {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0c0c0c;
+  color: #fff;
+  display: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity .5s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+#work-gallery.--is-open { display: block; }
+#work-gallery.--is-visible { opacity: 1; }
+
+#work-gallery .wg-close,
+#work-gallery .wg-toggle {
+  position: absolute;
+  z-index: 30;
+  border: none;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  transition: background .25s ease, transform .25s ease;
+}
+#work-gallery .wg-close { top: 24px; right: 32px; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; }
+#work-gallery .wg-toggle { top: 24px; left: 32px; height: 40px; padding: 0 18px; border-radius: 20px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
+#work-gallery .wg-close:hover, #work-gallery .wg-toggle:hover { background: rgba(255,255,255,.18); }
+
+#work-gallery .wg-counter {
+  position: absolute;
+  top: 34px; left: 50%; transform: translateX(-50%);
+  z-index: 30; font-size: 12px; letter-spacing: .1em; opacity: .6; pointer-events: none;
+}
+
+/* ---------- phase 1: vertical scroll-snap stack ---------- */
+.wg-vertical {
+  position: relative;
+  width: 100%; height: 100%;
+  overflow-y: auto; overflow-x: hidden;
+  scroll-snap-type: y proximity;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1;
+  transition: opacity .5s cubic-bezier(.25,.1,.25,1);
+}
+.wg-vertical::-webkit-scrollbar { display: none; }
+.wg-vertical__inner { width: 100%; padding: 0 var(--wg-h-margin); }
+.wg-vertical__body { padding-top: var(--wg-header-h); padding-bottom: 0; }
+.wg-vertical__rect {
+  display: grid;
+  row-gap: var(--wg-row-gap);
+  width: clamp(240px, 100%, 720px);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.wg-vertical__item { position: relative; width: 100%; aspect-ratio: 3 / 2; scroll-snap-align: center; overflow: hidden; cursor: zoom-in; }
+.wg-vertical__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.wg-vertical__spacing { position: relative; width: 100%; height: clamp(80px, 20svh, 240px); }
+
+/* ---------- phase 2: draggable scattered polaroid scrapbook ---------- */
+.wg-scrap {
+  position: fixed; inset: 0; z-index: 2;
+  pointer-events: none;
+  opacity: 0; visibility: hidden;
+  transition: opacity .5s cubic-bezier(.25,.1,.25,1), visibility .5s;
+  cursor: grab;
+  touch-action: none;
+}
+#work-gallery.--is-horizontal .wg-vertical { opacity: 0; pointer-events: none; }
+#work-gallery.--is-horizontal .wg-scrap { opacity: 1; visibility: visible; pointer-events: auto; }
+#work-gallery.--is-horizontal .wg-scrap.--dragging { cursor: grabbing; }
+
+.wg-scrap__canvas {
+  position: absolute;
+  top: 50%; left: 0;
+  width: 0; height: 0;
+  will-change: transform;
+}
+
+.wg-polaroid {
+  position: absolute;
+  top: -125px; left: -95px;
+  width: 190px;
+  transform-origin: center center;
+  transition: filter .3s ease, width .3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.wg-polaroid:not(.--active) { filter: brightness(.72) saturate(.85); }
+.wg-polaroid.--active { filter: none; }
+
+.wg-polaroid__inner {
+  background: #f7f5f0;
+  padding: 10px 10px 34px 10px;
+  border-radius: 2px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.45), 0 2px 4px rgba(0,0,0,.3);
+}
+.wg-polaroid__inner img {
+  display: block;
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* ---------- phase 3: fullscreen lightbox ---------- */
+.wg-fixed {
+  position: fixed; inset: 0; z-index: 10;
+  pointer-events: none;
+  touch-action: none;
+  opacity: 0; visibility: hidden;
+  transition: opacity .5s cubic-bezier(.16,1,.3,1), visibility .5s;
+}
+.wg-fixed.--is-visible { opacity: 1; visibility: visible; pointer-events: auto; }
+.wg-fixed__inner { position: relative; width: 100%; height: 100%; padding: 0 var(--wg-h-margin); display: flex; align-items: center; justify-content: center; }
+.wg-fixed__rect {
+  position: relative;
+  width: var(--wg-fixed-w);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  cursor: zoom-out;
+  overflow: hidden;
+}
+.wg-fixed__rect img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.wg-fixed__prev, .wg-fixed__next {
+  position: absolute; top: 0; width: calc(var(--wg-h-margin) * 3); height: 100%;
+  cursor: pointer; z-index: 5; background: transparent; border: none;
+}
+.wg-fixed__prev { left: calc(var(--wg-h-margin) * -1); }
+.wg-fixed__next { right: calc(var(--wg-h-margin) * -1); }
+
+.wg-hint {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .5; z-index: 5; pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  #work-gallery .wg-toggle { top: 16px; left: 16px; height: 34px; padding: 0 14px; font-size: 10px; }
+  #work-gallery .wg-close { top: 16px; right: 16px; width: 38px; height: 38px; }
+  #work-gallery .wg-counter { top: 22px; }
+  .wg-polaroid { width: 150px; left: -75px; top: -100px; }
+  .wg-polaroid__inner img { height: 150px; }
+}
