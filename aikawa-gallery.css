@@ -1,0 +1,289 @@
+/* aikawa-gallery.css
+   Standalone recreation of aikawakenichi.com's /work "Details" page.
+   Layout, spacing, typography, and transition timing are taken directly
+   from the site's real compiled CSS (style.DUbFSyt6.css / style.CuNCAHbz.css).
+   The WebGL shader look (aberration/blur/distortion) is approximated with
+   CSS filters driven by scroll velocity — not a shader port. See notes at
+   bottom of aikawa-gallery.js for the honest scope of that approximation.
+*/
+
+@font-face {
+  font-family: "Editorial Old";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("aikawa-site/assets/PPEditorialOld-Regular.BF3WubaG.woff2") format("woff2"),
+       url("aikawa-site/assets/PPEditorialOld-Regular.DNVo3SVo.woff") format("woff");
+}
+@font-face {
+  font-family: "Neue Montreal";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("aikawa-site/assets/PPNeueMontreal-Regular.BQcbSrHu.woff2") format("woff2"),
+       url("aikawa-site/assets/PPNeueMontreal-Regular.CAkBNy6_.woff") format("woff");
+}
+@font-face {
+  font-family: "Neue Montreal";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("aikawa-site/assets/PPNeueMontreal-Semibold.CeJ5oJqU.woff2") format("woff2"),
+       url("aikawa-site/assets/PPNeueMontreal-Semibold.HmTF8V9U.woff") format("woff");
+}
+
+#aikawa-gallery {
+  --app-grid-h-margin: 60px;
+  --app-grid-v-margin: 60px;
+  --app-grid-col-gap: 30px;
+  --app-grid-row-gap: 30px;
+  --app-spacing-xs: .625rem;
+  --app-spacing-s: 1.25rem;
+  --app-spacing-m: 1.875rem;
+  --app-spacing-l: 2.5rem;
+  --app-spacing-xl: 3.75rem;
+  --app-spacing-2xl: 5rem;
+  --app-spacing-3xl: 6.25rem;
+  --app-spacing-4xl: 7.5rem;
+  --app-spacing-5xl: 10rem;
+  --app-header-height: clamp(3.75rem, 10svh, 7.5rem);
+  --app-slider-slide-width: 65svw;
+  --app-slider-slide-height: 26svw;
+  --app-font-family-serif: "Editorial Old", serif;
+  --app-font-family-sans-serif: "Neue Montreal", -apple-system, BlinkMacSystemFont, sans-serif;
+  --app-color-black: #000;
+  --app-color-white: #fff;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0c0c0c;
+  color: var(--app-color-white);
+  font-family: var(--app-font-family-sans-serif);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#aikawa-gallery.--is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ---------- close button ---------- */
+.aikawa-gallery__close {
+  position: fixed;
+  top: var(--app-spacing-m);
+  right: var(--app-grid-h-margin);
+  z-index: 20;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: hsla(0, 0%, 100%, .1);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .35s cubic-bezier(.25, .46, .45, .94);
+}
+.aikawa-gallery__close:hover {
+  background: hsla(0, 0%, 100%, .2);
+}
+
+.aikawa-gallery__counter {
+  position: fixed;
+  top: var(--app-spacing-m);
+  left: var(--app-grid-h-margin);
+  z-index: 20;
+  font-size: .875rem;
+  letter-spacing: .02em;
+  opacity: .75;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- vertical stack (details-vertical) ---------- */
+.details-vertical {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+.details-vertical__inner {
+  width: 100%;
+  height: auto;
+  padding: 0 var(--app-grid-h-margin);
+}
+.details-vertical__body {
+  width: 100%;
+  height: auto;
+  padding-top: var(--app-header-height);
+  padding-bottom: 0;
+}
+.details-vertical__rect {
+  display: grid;
+  row-gap: var(--app-grid-row-gap);
+  position: relative;
+  width: clamp(240px, 100%, 720px);
+  margin: 0 auto;
+  z-index: 1;
+}
+.details-vertical__item {
+  position: relative;
+  cursor: zoom-in;
+  border-radius: 4px;
+  overflow: hidden;
+  will-change: filter, transform;
+}
+.details-vertical__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.details-vertical__spacing {
+  position: relative;
+  width: 100%;
+  height: 40svh;
+  min-height: var(--app-spacing-5xl);
+}
+
+/* ---------- horizontal filmstrip (details-horizontal) ---------- */
+.details-horizontal {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .5s cubic-bezier(.25, .46, .45, .94);
+}
+.details-horizontal.--is-horizontal {
+  pointer-events: auto;
+  opacity: 1;
+}
+.details-horizontal__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--app-grid-h-margin);
+  overflow: hidden;
+}
+.details-horizontal__body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.details-horizontal__rect {
+  display: flex;
+  column-gap: calc(var(--app-grid-col-gap) / 2);
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  will-change: transform;
+}
+.details-horizontal__item {
+  position: relative;
+  width: clamp(60px, 10svw, 80px);
+  height: clamp(240px, 50svh, 480px);
+  cursor: zoom-in;
+  flex: none;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: width .45s cubic-bezier(.25, .46, .45, .94), height .45s cubic-bezier(.25, .46, .45, .94);
+  will-change: filter;
+}
+.details-horizontal__item.--is-active {
+  width: clamp(240px, 40svw, 480px);
+}
+.details-horizontal__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- fullscreen lightbox (details-fixed) ---------- */
+.details-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity .55s cubic-bezier(.65, 0, .35, 1);
+}
+.details-fixed.--is-visible {
+  pointer-events: auto;
+  opacity: 1;
+}
+.details-fixed__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--app-grid-h-margin);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.details-fixed__rect {
+  position: relative;
+  width: clamp(240px, 100%, 1080px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  cursor: zoom-out;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.details-fixed__rect img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: filter, transform;
+}
+.details-fixed__prev,
+.details-fixed__next {
+  position: absolute;
+  top: 0;
+  width: calc(var(--app-grid-h-margin) * 3);
+  height: 100%;
+  cursor: pointer;
+  z-index: 5;
+  background: none;
+  border: none;
+}
+.details-fixed__prev { left: 0; }
+.details-fixed__next { right: 0; }
+
+/* ---------- scroll-velocity shader approximation ----------
+   NOT a shader port. The real site drives blur/chromatic-aberration
+   through WebGL render targets. This approximates the *feel* with a
+   CSS filter tied to scroll speed — cheap, GPU-light, close-but-not-exact. */
+.aikawa-gallery--fast .details-vertical__item,
+.aikawa-gallery--fast .details-horizontal__item img,
+.aikawa-gallery--fast .details-fixed__rect img {
+  filter: blur(var(--aikawa-blur, 0px));
+}
+
+.aikawa-gallery__hint {
+  position: fixed;
+  bottom: var(--app-spacing-m);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .8125rem;
+  opacity: .6;
+  letter-spacing: .02em;
+  z-index: 20;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  #aikawa-gallery {
+    --app-grid-h-margin: 24px;
+    --app-grid-v-margin: 24px;
+  }
+  .details-vertical__rect { width: 100%; }
+}
