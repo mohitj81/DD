@@ -1,0 +1,271 @@
+/* ==========================================================================
+   Memory Viewer — drop-in module for the DD project
+   Recreates aikawakenichi.com /work page behavior:
+     - loading transition
+     - scroll-snap gallery with inertia
+     - fullscreen black-background image viewer (drag / rotate / pinch-zoom)
+   Real constants pulled from the live site's shipped CSS/JS:
+     primary ease  : cubic-bezier(.104,.204,.492,1)
+     secondary ease: cubic-bezier(.306,.968,.632,1)
+     layer duration: .35s (nav/header transitions on the source site)
+   ========================================================================== */
+
+:root {
+  --mv-ease: cubic-bezier(.104, .204, .492, 1);
+  --mv-ease-2: cubic-bezier(.306, .968, .632, 1);
+  --mv-dur-fast: .25s;
+  --mv-dur: .35s;
+  --mv-dur-slow: .45s;
+  --mv-bg: #000;
+  --mv-fg: #fff;
+  --mv-z: 10000;
+}
+
+/* ---------- root overlay ---------- */
+.mv-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--mv-z);
+  background: var(--mv-bg);
+  color: var(--mv-fg);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--mv-dur) var(--mv-ease), visibility 0s linear var(--mv-dur);
+}
+.mv-root.--open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--mv-dur) var(--mv-ease), visibility 0s linear 0s;
+}
+.mv-root * { box-sizing: border-box; }
+
+/* ---------- loading state (mirrors g-loading fixed overlay pattern) ---------- */
+.mv-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mv-bg);
+  opacity: 1;
+  transition: opacity var(--mv-dur-slow) var(--mv-ease);
+  pointer-events: none;
+}
+.mv-root.--loaded .mv-loading {
+  opacity: 0;
+}
+.mv-loading__mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-top-color: var(--mv-fg);
+  animation: mv-spin 0.9s linear infinite;
+  will-change: transform;
+}
+@keyframes mv-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- close / chrome ---------- */
+.mv-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--mv-fg);
+  cursor: pointer;
+  opacity: .8;
+  transition: opacity var(--mv-dur-fast) var(--mv-ease), transform var(--mv-dur-fast) var(--mv-ease);
+}
+.mv-close:hover { opacity: 1; transform: rotate(90deg); }
+.mv-close svg { width: 18px; height: 18px; display: block; }
+
+.mv-counter {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 5;
+  font: 400 12px/1 "PP Neue Montreal", system-ui, sans-serif;
+  letter-spacing: .04em;
+  opacity: .7;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Gallery (scroll-snap track, momentum-scrolled)
+   ========================================================================== */
+.mv-gallery {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.mv-gallery__track {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.mv-gallery__list {
+  position: relative;
+  width: 100%;
+}
+.mv-gallery__item {
+  position: relative;
+  width: 100%;
+  padding: 8vh 6vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(4%) scale(.985);
+  transition: opacity var(--mv-dur-slow) var(--mv-ease), transform var(--mv-dur-slow) var(--mv-ease);
+}
+.mv-gallery__item.--in-view {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.mv-gallery__figure {
+  position: relative;
+  max-width: 100%;
+  max-height: 84vh;
+  cursor: zoom-in;
+}
+.mv-gallery__img {
+  display: block;
+  max-width: 100%;
+  max-height: 84vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity var(--mv-dur) var(--mv-ease);
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+.mv-gallery__img.--loaded { opacity: 1; }
+
+.mv-gallery__index {
+  position: absolute;
+  left: 0;
+  bottom: -28px;
+  font: 400 11px/1 "PP Neue Montreal", system-ui, sans-serif;
+  letter-spacing: .04em;
+  opacity: .55;
+}
+
+/* ==========================================================================
+   Fullscreen single-image viewer (drag / rotate / pinch-zoom)
+   ========================================================================== */
+.mv-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: var(--mv-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--mv-dur) var(--mv-ease), visibility 0s linear var(--mv-dur);
+}
+.mv-root.--stage-open .mv-stage {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--mv-dur) var(--mv-ease), visibility 0s linear 0s;
+}
+.mv-stage__viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: grab;
+}
+.mv-stage__viewport.--panning { cursor: grabbing; }
+.mv-stage__img {
+  max-width: 92vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  -webkit-user-drag: none;
+  user-select: none;
+  will-change: transform;
+  transform-origin: center center;
+  backface-visibility: hidden;
+}
+/* transform is applied inline via JS (translate/scale/rotate) for perf;
+   only add a transition while NOT actively dragging/pinching */
+.mv-stage__img.--settling {
+  transition: transform var(--mv-dur) var(--mv-ease-2);
+}
+
+.mv-stage__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--mv-fg);
+  opacity: .7;
+  cursor: pointer;
+  transition: opacity var(--mv-dur-fast) var(--mv-ease);
+}
+.mv-stage__nav:hover { opacity: 1; }
+.mv-stage__nav--prev { left: 16px; }
+.mv-stage__nav--next { right: 16px; }
+.mv-stage__nav svg { width: 20px; height: 20px; }
+
+.mv-stage__hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 400 11px/1 "PP Neue Montreal", system-ui, sans-serif;
+  letter-spacing: .04em;
+  opacity: .5;
+  pointer-events: none;
+  transition: opacity var(--mv-dur) var(--mv-ease);
+}
+.mv-root.--interacted .mv-stage__hint { opacity: 0; }
+
+/* ---------- responsive / orientation ---------- */
+@media (max-width: 720px) {
+  .mv-gallery__item { padding: 6vh 4vw; }
+  .mv-close { top: 16px; right: 16px; }
+  .mv-counter { bottom: 16px; left: 16px; }
+}
+@media (orientation: landscape) and (max-height: 480px) {
+  .mv-gallery__figure, .mv-gallery__img { max-height: 90vh; }
+  .mv-stage__img { max-height: 96vh; }
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mv-root, .mv-loading, .mv-gallery__item, .mv-gallery__img,
+  .mv-stage, .mv-stage__img, .mv-close, .mv-stage__nav {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}

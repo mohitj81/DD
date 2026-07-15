@@ -81,7 +81,53 @@
         .nav-icon-btn:hover { transform: scale(1.12); background: rgba(201,169,110,0.2); }
         .nav-icon-btn svg { width: 20px; height: 20px; display: block; }
 
-
+        /* 5. Quarry House orb-collision overlay */
+        #quarry-house-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 999998; /* below the ending overlay, above everything else */
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+        #quarry-house-overlay.is-open {
+            display: block;
+        }
+        #quarry-house-overlay.is-visible {
+            opacity: 1;
+        }
+        #quarry-house-frame {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+        #quarry-house-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            z-index: 2;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #c9a96e;
+            background: rgba(10, 10, 20, 0.55);
+            color: #c9a96e;
+            font-size: 1.1em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+        }
+        #quarry-house-close:hover {
+            transform: scale(1.1);
+            background: rgba(201,169,110,0.2);
+        }
     </style>
 </head>
 <body>
@@ -105,6 +151,12 @@
             </video>
             <button id="dhruti-playagain" onclick="location.reload()">PLAY AGAIN</button>
         </div>
+    </div>
+
+    <!-- Quarry House page, shown on orb collision -->
+    <div id="quarry-house-overlay">
+        <button id="quarry-house-close" title="Close" aria-label="Close">&times;</button>
+        <iframe id="quarry-house-frame" src="about:blank" title="The Quarry House" allow="autoplay"></iframe>
     </div>
 </main>
 
@@ -226,12 +278,90 @@
             clearInterval(menuInjectTimer);
         }
     }, 500);
+
+    // ---- Quarry House orb-collision page ----
+    // Quarry House's original index page, sitting flat in the project root
+    // (renamed to avoid colliding with this project's own index.html).
+    const QUARRY_HOUSE_PATH = "index copy.html";
+
+    function getWebglForQuarryHouse() {
+        try {
+            const appEl = document.querySelector('#mm-experience-wrapper').__vue_app__;
+            return appEl ? appEl.config.globalProperties.$webgl : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    window._dhrutiOpenQuarryHouse = function () {
+        const overlay = document.getElementById('quarry-house-overlay');
+        const frame = document.getElementById('quarry-house-frame');
+        if (!overlay || !frame) return;
+
+        // Pause the underlying game, same as StorySlider does.
+        const webgl = getWebglForQuarryHouse();
+        if (webgl && webgl.$game) webgl.$game.paused.set(true);
+
+        frame.src = QUARRY_HOUSE_PATH;
+        overlay.classList.add('is-open');
+        void overlay.offsetWidth;
+        overlay.classList.add('is-visible');
+    };
+
+    window._dhrutiCloseQuarryHouse = function () {
+        const overlay = document.getElementById('quarry-house-overlay');
+        const frame = document.getElementById('quarry-house-frame');
+        if (!overlay || !frame) return;
+
+        overlay.classList.remove('is-visible');
+        setTimeout(() => {
+            overlay.classList.remove('is-open');
+            frame.src = 'about:blank'; // stop audio/animation in the background
+        }, 650);
+
+        const webgl = getWebglForQuarryHouse();
+        if (webgl && webgl.$game) webgl.$game.paused.set(false);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const closeBtn = document.getElementById('quarry-house-close');
+        if (closeBtn) closeBtn.addEventListener('click', window._dhrutiCloseQuarryHouse);
+    });
+
+    // Open the Quarry House page every time an orb is collected.
+    window.addEventListener('mm-orb-collected', function () {
+        window._dhrutiOpenQuarryHouse();
+    });
 </script>
 
 <script crossorigin type="module" src="experience.js"></script>
 
 
-<link rel="stylesheet" href="aikawa-gallery.css">
-<script src="aikawa-gallery.js"></script>
+<link rel="stylesheet" href="story-slider.css">
+<script src="story-slider.js"></script>
+<script>
+  function getWebgl() {
+    const appEl = document.querySelector('#mm-experience-wrapper').__vue_app__;
+    return appEl ? appEl.config.globalProperties.$webgl : null;
+  }
+
+  // StorySlider no longer opens on orb collision — Quarry House opens instead
+  // (see the mm-orb-collected listener above, which calls _dhrutiOpenQuarryHouse).
+
+  // Intercept StorySlider methods to pause/unpause the game
+  const originalOpen = StorySlider.open;
+  StorySlider.open = function () {
+    const webgl = getWebgl();
+    if (webgl && webgl.$game) webgl.$game.paused.set(true);
+    originalOpen.apply(this, arguments);
+  };
+
+  const originalClose = StorySlider.close;
+  StorySlider.close = function () {
+    const webgl = getWebgl();
+    if (webgl && webgl.$game) webgl.$game.paused.set(false);
+    originalClose.apply(this, arguments);
+  };
+</script>
 </body>
 </html>
