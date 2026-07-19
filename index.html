@@ -330,31 +330,6 @@
 <script crossorigin type="module" src="experience.js"></script>
 
 
-<link rel="stylesheet" href="story-slider.css">
-<script src="story-slider.js"></script>
-<script>
-  function getWebgl() {
-    const appEl = document.querySelector('#mm-experience-wrapper').__vue_app__;
-    return appEl ? appEl.config.globalProperties.$webgl : null;
-  }
 
-  // StorySlider no longer opens on orb collision — Quarry House opens instead
-  // (see the mm-orb-collected listener above, which calls _dhrutiOpenQuarryHouse).
-
-  // Intercept StorySlider methods to pause/unpause the game
-  const originalOpen = StorySlider.open;
-  StorySlider.open = function () {
-    const webgl = getWebgl();
-    if (webgl && webgl.$game) webgl.$game.paused.set(true);
-    originalOpen.apply(this, arguments);
-  };
-
-  const originalClose = StorySlider.close;
-  StorySlider.close = function () {
-    const webgl = getWebgl();
-    if (webgl && webgl.$game) webgl.$game.paused.set(false);
-    originalClose.apply(this, arguments);
-  };
-</script>
 </body>
 </html>
