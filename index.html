@@ -91,13 +91,15 @@
             background: #000;
             z-index: 999998; /* below the ending overlay, above everything else */
             opacity: 0;
-            transition: opacity 0.6s ease-in-out;
+            transform: scale(1.15);
+            transition: opacity 0.6s ease-in-out, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
         #quarry-house-overlay.is-open {
             display: block;
         }
         #quarry-house-overlay.is-visible {
             opacity: 1;
+            transform: scale(1);
         }
         #quarry-house-frame {
             width: 100%;
@@ -317,6 +319,7 @@
 
         const webgl = getWebglForQuarryHouse();
         if (webgl && webgl.$game) webgl.$game.paused.set(false);
+        document.getElementById('mm-experience-wrapper').focus();
     };
 
 
