@@ -25,16 +25,31 @@
             color: #fff; font-family: Georgia, serif;
         }
         #dhruti-credits {
-            position: absolute; top: 100%; left: 0; width: 100%; text-align: center;
-            transition: top 18s linear;
+            position:absolute;
+            top:100%;
+            left:0;
+            width:100%;
+            text-align:center;
+            transition:top 34s linear;
         }
         #dhruti-video-wrap {
-            position: absolute; top: 200%; left: 50%; transform: translateX(-50%);
-            width: min(90vw, 560px); display: flex; flex-direction: column; align-items: center;
-            transition: top 18s linear;
+            position:absolute;
+            top:200%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            width:min(90vw,560px);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            padding-bottom:3em;
+            box-sizing:border-box;
+            transition:top 34s linear;
         }
         #dhruti-playagain {
-            margin-top: 2em; padding: 12px 40px; background: transparent;
+            width: 100%; text-align: center;
+        }
+        
+            margin-top: 2em; margin-bottom: 2em; padding: 12px 40px; background: transparent;
             border: 1px solid #c9a96e; color: #c9a96e; font-size: 0.9em;
             letter-spacing: 0.2em; cursor: pointer; opacity: 0;
             transition: opacity 1s ease-in; display: none;
@@ -115,47 +130,39 @@
     <section id="mm-experience-wrapper"></section>
 
     <div id="dhruti-ending">
+              <div id="dhruti-credits">
+            <p style="font-size:1.2em;letter-spacing:0.15em;color:#c9a96e;">Happy Birthday Dhruti</p><br><br>
 
-        <div id="dhruti-credits">
-    <p style="font-size:1.2em;letter-spacing:0.15em;color:#c9a96e;">Happy Birthday Dhruti</p><br><br>
+            <p style="font-size:0.9em;color:#aaa;letter-spacing:0.15em;text-transform:uppercase;">Cast</p><br>
+            <p style="font-size:0.85em;color:#888;">Starring Dhruti as Chomu</p><br>
+            <p style="font-size:0.8em;color:#666;">Cuttu - Dhruti</p>
+            <p style="font-size:0.8em;color:#666;">Ghonchu - Dhruti</p>
+            <p style="font-size:0.8em;color:#666;">Bhukkad - Dhruti</p>
+            <p style="font-size:0.8em;color:#666;">Sundari - Dhruti</p>
+            <p style="font-size:0.8em;color:#666;">Chomu - Dhruti</p>
+            <p style="font-size:0.85em;color:#888;">Mohit as the Best Guy Ever</p><br>
+            <p style="font-size:0.8em;color:#666;">Camera - Kya fayda jab shakal aisi</p>
+            <p style="font-size:0.8em;color:#666;">Lights - Future hi andhera</p>
+            <p style="font-size:0.8em;color:#666;">Extras - Baaki sab, cuz main character toh tum</p><br><br>
 
-    <p style="font-size:0.9em;color:#aaa;letter-spacing:0.15em;text-transform:uppercase;">Cast</p><br>
-    <p style="font-size:0.85em;color:#888;">Starring Dhruti as Chomu</p><br>
-    <p style="font-size:0.8em;color:#666;">Cuttu - Dhruti</p>
-    <p style="font-size:0.8em;color:#666;">Ghonchu - Dhruti</p>
-    <p style="font-size:0.8em;color:#666;">Bhukkad - Dhruti</p>
-    <p style="font-size:0.8em;color:#666;">Sundari - Dhruti</p>
-    <p style="font-size:0.8em;color:#666;">Chomu - Dhruti</p>
-    <p style="font-size:0.85em;color:#888;">Mohit as the Best Guy Ever</p><br>
-    <p style="font-size:0.8em;color:#666;">Camera - Kya fayda jab shakal aisi</p>
-    <p style="font-size:0.8em;color:#666;">Lights - Future hi andhera</p>
-    <p style="font-size:0.8em;color:#666;">Extras - Baaki sab, cuz main character toh tum</p><br><br>
-
-    <p style="font-size:0.85em;color:#ccc;max-width:520px;margin:0 auto;line-height:1.7;padding:0 1.5em;">
-        Happy birthday DT, thanks for always being here handling all my stupid ruthna and natak.
-        You are really awesome, jaise bhi hai tu, thodi pagal si — I hope you never change,
-        aur 50 saal mere sath stuck rahe, and I hope tu londe ghumane band kare aur chutiya banana bhi,
-        tharki toh waise bhi ho hehe. Thanks for always saving me from the most depressing shit and
-        being on call with me for hours. I never wanna lose you ever, and your backchodi too.
-        The prettiest girl and the most handsome aadha ladka, most lame yet funny person ik —
-        happy birthday Dhruti. I love you bro and hope we stay the same and never drift apart.
-    </p><br>
-
-    <p style="font-size:0.9em;color:#c9a96e;letter-spacing:0.1em;">Chumma, Mohit</p>
-</div>
+            <p style="font-size:0.85em;color:#ccc;max-width:520px;margin:0 auto;line-height:1.7;padding:0 1.5em;">
+                Happy birthday DT, thanks for always being here handling all my stupid ruthna and natak.
+                You are really awesome, jaise bhi hai tu, thodi pagal si — I hope you never change,
+                aur 50 saal mere sath stuck rahe, and I hope tu londe ghumane band kare aur chutiya banana bhi,
+                tharki toh waise bhi ho hehe. Thanks for always saving me from the most depressing shit and
+                being on call with me for hours. I never wanna lose you ever, and your backchodi too.
+                The prettiest girl and the most handsome aadha ladka, most lame yet funny person ik —
+                happy birthday Dhruti. I love you bro and hope we stay the same and never drift apart.
+            </p><br>
+            <p style="font-size:0.9em;color:#c9a96e;letter-spacing:0.1em;">Chumma, Mohit</p>
+        </div>
 
         <div id="dhruti-video-wrap">
-    <video
-        id="dhruti-video"
-        controls
-        playsinline
-        preload="metadata"
-        style="width:100%;border-radius:8px;box-shadow:0 0 40px rgba(201,169,110,0.3);">
-        <source src="birthday-message.mp4" type="video/mp4">
-    </video>
-
-    <button id="dhruti-playagain" onclick="location.reload()">PLAY AGAIN</button>
-</div>
+            <video id="dhruti-video" style="width:100%;border-radius:8px;box-shadow:0 0 40px rgba(201,169,110,0.3);">
+                <source src="birthday-message.mp4" type="video/mp4">
+            </video>
+            <button id="dhruti-playagain" onclick="location.reload()">PLAY AGAIN</button>
+        </div>
     </div>
 
     <!-- Quarry House page, shown on orb collision -->
@@ -180,53 +187,27 @@
     }, 250);
 
     window._dhrutiShowEnding = function() {
-        const el = document.getElementById('dhruti-ending');
-        if (!el) return;
-        
-        // Force-hide the root Cartier UI container so it cannot overlap the ending
-        const uiContainer = document.querySelector('.ui');
-        if (uiContainer) uiContainer.style.display = 'none !important';
-
-        el.style.display = 'flex';
+        const el=document.getElementById("dhruti-ending");
+        if(!el) return;
+        const ui=document.querySelector(".ui");
+        if(ui) ui.style.setProperty("display","none","important");
+        el.style.display="flex";
         void el.offsetWidth;
-        el.style.opacity = '1';
-        
-        setTimeout(() => {
-            document.getElementById('dhruti-credits').style.top = '-100%';
-            document.getElementById('dhruti-video-wrap').style.top = '15%';
-        }, 1500);
-        setTimeout(() => {
-    const ending = document.getElementById('dhruti-ending');
-    const credits = document.getElementById('dhruti-credits');
-    const videoWrap = document.getElementById('dhruti-video-wrap');
-    const video = document.getElementById('dhruti-video');
-
-    // Stop the automatic animation
-    credits.style.transition = "none";
-    videoWrap.style.transition = "none";
-
-    // Allow manual scrolling
-    ending.style.overflowY = "auto";
-
-    // Make the content part of the normal page flow
-    credits.style.position = "relative";
-    credits.style.top = "0";
-
-    videoWrap.style.position = "relative";
-    videoWrap.style.top = "40px";
-    videoWrap.style.left = "0";
-    videoWrap.style.transform = "none";
-    videoWrap.style.margin = "40px auto";
-
-    // Enable video controls and start playback
-    video.controls = true;
-    video.play().catch(console.error);
-
-    const btn = document.getElementById('dhruti-playagain');
-    btn.style.display = 'block';
-    void btn.offsetWidth;
-    btn.style.opacity = '1';
-}, 19500);
+        el.style.opacity="1";
+        const credits=document.getElementById("dhruti-credits");
+        const videoWrap=document.getElementById("dhruti-video-wrap");
+        setTimeout(()=>{
+            credits.style.top="-100%";
+            videoWrap.style.top="50%";
+        },1500);
+        setTimeout(()=>{
+            const video=document.getElementById("dhruti-video");
+            video.play().catch(()=>{});
+            const btn=document.getElementById("dhruti-playagain");
+            btn.style.display="block";
+            void btn.offsetWidth;
+            btn.style.opacity="1";
+        },35500);
     };
 
     window.debugSwitchLevel = function (routeName) {
@@ -386,7 +367,7 @@
 
 <script>
 (function () {
-    var message = "Hi Dumbo,\n\nYeh le bhai, tera birthday gift. Sorry for taking so much time, and I hope you like it.\n\nPlay the game. I know you're bad at Flappy Bird (chi), but still, try. Play the game, feel the peace, collect the orbs, and relive the moments—with me, with your family, and with your friends... ya phir jab jab tu akele ghumne nikal gayi mere bina.\n\nSit in the zeppelin, explore the three levels—from the Cloudy Skies, to the Frozen Lake, and the Night of Paris and fir find me in the credits.\n\nIf you want to skip levels, open the menu and select a level, or go directly to the credits. (But pagal ek baar toh play  lol.)\n\nThat's it, I guess.\n\nHave fun, and Happy Birthday, Dumbo. ❤️";
+    var message = "Hi Dumbo,\n\nYeh le bhai, tera birthday gift. Sorry for taking so much time, and I hope you like it.\n\nPlay the game. I know you're bad at Flappy Bird (chi), but still, try. Play the game, feel the peace, collect the orbs, and relive the moments—with me, with your family, and with your friends... ya phir jab jab tu akele ghumne nikal gayi mere bina.\n\nSit in the zeppelin, explore the three levels—from the Cloudy Skies, to the Frozen Lake, and the Night of Paris and fir find me in the credits.\n\nIf you want to skip levels, open the menu and select a level, or go directly to the credits. (But pagal ek baar toh play pura lol.)\n\nThat's it, I guess.\n\nHave fun, and Happy Birthday, Dumbo. ❤️";
     var resolveGuideDone;
     var guideDone = false;
     window.__dhrutiGuideDonePromise = new Promise(function (resolve) {
