@@ -200,7 +200,7 @@
                     user.currentLevel = routeName;
                     if (typeof user.saveData === 'function') user.saveData();
                     
-                    router.push({ name: routeName });
+                    router.push({ name: routeName }).catch(err => console.error('[DD-DEBUG] router.push failed:', err));
                     
                     if (store) store.isMenuOpen = false;
                     return; 
@@ -279,6 +279,8 @@
         // Pause the underlying game, same as StorySlider does.
         const webgl = getWebglForQuarryHouse();
         if (webgl && webgl.$game) webgl.$game.paused.set(true);
+        console.log('[DD] game paused for Quarry House');
+
 
         // Hijack quarry's own close button + logo link so they close THIS
         // overlay instead of navigating to quarry's own home page.
@@ -310,6 +312,7 @@
         const overlay = document.getElementById('quarry-house-overlay');
         const frame = document.getElementById('quarry-house-frame');
         if (!overlay || !frame) return;
+        console.log('[DD] closing Quarry House, unpausing game');
 
         overlay.classList.remove('is-visible');
         setTimeout(() => {
